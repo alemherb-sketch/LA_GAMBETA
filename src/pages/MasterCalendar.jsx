@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { format, addDays, startOfToday } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Plus, Edit2, Trash2 } from 'lucide-react';
@@ -29,7 +29,15 @@ const initialReservations = [
 
 const MasterCalendar = () => {
   const [selectedDate, setSelectedDate] = useState(startOfToday());
-  const [reservations, setReservations] = useState(initialReservations);
+  const [reservations, setReservations] = useState(() => {
+    const saved = localStorage.getItem('gambeta_reservations');
+    return saved ? JSON.parse(saved) : initialReservations;
+  });
+  
+  useEffect(() => {
+    localStorage.setItem('gambeta_reservations', JSON.stringify(reservations));
+  }, [reservations]);
+
   const [modalOpen, setModalOpen] = useState(false);
   const [activeSlot, setActiveSlot] = useState(null);
   const [draggedRes, setDraggedRes] = useState(null);

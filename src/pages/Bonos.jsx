@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Gift, Plus, Trophy, Star, Target, CheckCircle2, Award, Settings } from 'lucide-react';
 
 const initialBonuses = [
@@ -16,8 +16,23 @@ const mockClients = [
 ];
 
 const Bonos = () => {
-  const [bonuses, setBonuses] = useState(initialBonuses);
-  const [clients, setClients] = useState(mockClients);
+  const [bonuses, setBonuses] = useState(() => {
+    const saved = localStorage.getItem('gambeta_bonuses');
+    return saved ? JSON.parse(saved) : initialBonuses;
+  });
+  
+  useEffect(() => {
+    localStorage.setItem('gambeta_bonuses', JSON.stringify(bonuses));
+  }, [bonuses]);
+
+  const [clients, setClients] = useState(() => {
+    const saved = localStorage.getItem('gambeta_bonos_clients');
+    return saved ? JSON.parse(saved) : mockClients;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('gambeta_bonos_clients', JSON.stringify(clients));
+  }, [clients]);
 
   const maxTarget = Math.max(...bonuses.map(b => b.target), 1);
 

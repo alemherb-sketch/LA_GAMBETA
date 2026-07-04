@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Users, Search, Plus, MoreVertical, Edit2, Trash2 } from 'lucide-react';
 
 const initialCustomers = [
@@ -9,7 +9,15 @@ const initialCustomers = [
 ];
 
 const Customers = () => {
-  const [customers, setCustomers] = useState(initialCustomers);
+  const [customers, setCustomers] = useState(() => {
+    const saved = localStorage.getItem('gambeta_customers');
+    return saved ? JSON.parse(saved) : initialCustomers;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('gambeta_customers', JSON.stringify(customers));
+  }, [customers]);
+
   const [searchTerm, setSearchTerm] = useState('');
   
   // Modal State
