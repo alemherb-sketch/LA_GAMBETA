@@ -1,18 +1,26 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, User, Phone, Plus, List } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
-// Mock customers for the dropdown
-const existingCustomers = [
-  { id: 'C001', name: 'Carlos Torres', phone: '987654321' },
-  { id: 'C002', name: 'Luis Fernández', phone: '912345678' },
-  { id: 'C003', name: 'Equipo Los Galácticos', phone: '999888777' },
-  { id: 'C004', name: 'María López', phone: '955444333' },
-];
-
 const ReservationModal = ({ date, timeSlot, field, onClose, onSave, existingReservation }) => {
   const [isNewCustomer, setIsNewCustomer] = useState(false);
+  const [customersList, setCustomersList] = useState([]);
+  
+  useEffect(() => {
+    const saved = localStorage.getItem('gambeta_customers');
+    if (saved) {
+      setCustomersList(JSON.parse(saved));
+    } else {
+      setCustomersList([
+        { id: 'C001', name: 'Carlos Torres', phone: '987654321' },
+        { id: 'C002', name: 'Luis Fernández', phone: '912345678' },
+        { id: 'C003', name: 'Equipo Los Galácticos', phone: '999888777' },
+        { id: 'C004', name: 'María López', phone: '955444333' },
+      ]);
+    }
+  }, []);
+
   const [formData, setFormData] = useState({
     customerName: existingReservation?.customerName || '',
     phone: '',
@@ -28,7 +36,7 @@ const ReservationModal = ({ date, timeSlot, field, onClose, onSave, existingRese
       setFormData({...formData, customerName: '', phone: ''});
       return;
     }
-    const customer = existingCustomers.find(c => c.id === selectedId);
+    const customer = customersList.find(c => c.id === selectedId);
     if (customer) {
       setFormData({...formData, customerName: customer.name, phone: customer.phone});
     }
@@ -127,7 +135,7 @@ const ReservationModal = ({ date, timeSlot, field, onClose, onSave, existingRese
                   style={{ appearance: 'none' }}
                 >
                   <option value="" disabled>-- Selecciona un cliente --</option>
-                  {existingCustomers.map(c => (
+                  {customersList.map(c => (
                     <option key={c.id} value={c.id}>{c.name}</option>
                   ))}
                 </select>
